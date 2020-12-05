@@ -8,19 +8,12 @@ import (
 	"time"
 )
 
-func concurrent() {
+func concurrentProcessing(prefix, category string) {
 	start := time.Now()
 	ch := make(chan string)
 
-	// bufferedReader, err := createBufferedReader("data/20201203-gleif-concatenated-file-rr.xml.5fc8c1302bde7.zip")
-	inFile, err := os.Open("data/20201202-gleif-concatenated-file-lei2.xml")
-	if err != nil {
-		panic(err)
-	}
-	defer inFile.Close()
-
-	bufferedReader := bufio.NewReader(inFile)
-	recordSets := readAndUnmarshalByStream(bufferedReader, 1000, ch, "lei", "LEI")
+	bufferedReader, err := createBufferedReader("data/20201202-gleif-concatenated-file-lei2.xml.5fc7579cab4ee.zip")
+	recordSets := readAndUnmarshalByStream(bufferedReader, 1000, ch, prefix, category)
 
 	outFile, err := os.OpenFile("data/sampleWrite.csv", os.O_CREATE|os.O_RDWR, 0666)
 	if err != nil {
