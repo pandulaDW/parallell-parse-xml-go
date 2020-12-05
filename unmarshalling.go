@@ -3,47 +3,44 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
-	"log"
+	"strings"
 )
 
-// ExampleUnMarshal function
-func ExampleUnMarshal() {
-	type Email struct {
-		Where  string `xml:"where,attr"`
-		Addr   string
-		Domain string
+func unmarshalRR(content *string) string {
+	records := RelationshipData{}
+	if err := xml.Unmarshal([]byte(*content), &records); err != nil {
+		fmt.Println(err)
 	}
-
-	type Address struct {
-		City, State string
+	sb := strings.Builder{}
+	for _, record := range records.RelationshipRecords {
+		row := convertToCSVRow(&record)
+		sb.WriteString(row)
+		sb.WriteByte('\n')
 	}
+	return sb.String()
+}
 
-	type Result struct {
-		XMLName xml.Name `xml:"Person"`
-		Name    string   `xml:"FullName"`
-		Phone   string
-		Email   []Email
-		Groups  []string `xml:"Group>Value"`
-		Address
+func unmarshalLEI(content *string) string {
+	records := LEIData{}
+	if err := xml.Unmarshal([]byte(*content), &records); err != nil {
+		fmt.Println(err)
 	}
-
-	v := Result{Name: "none", Phone: "none"}
-
-	content, err := ioutil.ReadFile("readSample.xml")
-	if err != nil {
-		log.Fatal(err)
+	sb := strings.Builder{}
+	for _, record := range records.LEIRecords {
+		row := fmt.Sprintf("%v -> %v", record.LEI, record.Entity.LegalName)
+		sb.WriteString(row)
+		sb.WriteByte('\n')
 	}
+	return sb.String()
+}
 
-	if err := xml.Unmarshal(content, &v); err != nil {
-		fmt.Printf("error: %v", err)
-		return
+func unmarshalRecords(content string, ch chan<- string, category string) {
+	var rows string
+	switch {
+	case category == "Relationship":
+		rows = unmarshalRR(&content)
+	case category == "LEI":
+		rows = unmarshalLEI(&content)
 	}
-
-	fmt.Printf("XMLName: %#v\n", v.XMLName)
-	fmt.Printf("Name: %q\n", v.Name)
-	fmt.Printf("Phone: %q\n", v.Phone)
-	fmt.Printf("Email: %v\n", v.Email)
-	fmt.Printf("Groups: %v\n", v.Groups)
-	fmt.Printf("Address: %v\n", v.Address.State)
+	ch <- rows
 }
