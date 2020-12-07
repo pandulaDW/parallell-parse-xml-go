@@ -12,7 +12,12 @@ import (
 )
 
 func createBufferedReader(filename string) (*bufio.Reader, error) {
-	zipContent, err := ioutil.ReadFile(filename)
+	// zipContent, err := ioutil.ReadFile(filename)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	zipContent, err := downloadFileToMemory("https://leidata.gleif.org/api/v1/concatenated-files/rr/20201206/zip")
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +32,7 @@ func createBufferedReader(filename string) (*bufio.Reader, error) {
 	return bufferedReader, nil
 }
 
-func downloadFileToMemory(url string) (*bytes.Buffer, error) {
+func downloadFileToMemory(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -36,7 +41,10 @@ func downloadFileToMemory(url string) (*bytes.Buffer, error) {
 
 	buffer := new(bytes.Buffer)
 	_, err = io.Copy(buffer, resp.Body)
-	return buffer, err
+	if err != nil {
+		return nil, err
+	}
+	return ioutil.ReadAll(buffer)
 }
 
 func unzipFilesInMemory(zipContent []byte) ([]byte, error) {
