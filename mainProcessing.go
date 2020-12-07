@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"log"
-	"os"
 	"time"
 )
 
@@ -12,32 +11,33 @@ func concurrentProcessing(prefix, category string) {
 	start := time.Now()
 	ch := make(chan string)
 
-	bufferedReader, err := createBufferedReader("data/20201203-gleif-concatenated-file-rr.xml.5fc8c1302bde7.zip")
-	recordSets := readAndUnmarshalByStream(bufferedReader, 1000, ch, prefix, category)
-
-	outFile, err := os.OpenFile("data/sampleWrite2.csv", os.O_CREATE|os.O_RDWR, 0666)
+	bufferedReader, err := createBufferedReader("data/20201202-gleif-concatenated-file-lei2.xml.5fc7579cab4ee.zip")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer outFile.Close()
 
-	writer := bufio.NewWriter(outFile)
-	count := 0
+	recordSets := readAndUnmarshalByStream(bufferedReader, 1000, ch, prefix, category)
+
+	zipWriter, zipFile := createGzipWriter("file.zip", "testfile.csv")
+	bufferedWriter := bufio.NewWriter(zipWriter)
 
 	header := createCsvHeader()
-	writer.WriteString(header)
-	writer.WriteByte('\n')
+	bufferedWriter.WriteString(header)
+	bufferedWriter.WriteByte('\n')
 
+	count := 0
 	for count < recordSets {
 		recordSet := <-ch
-		writer.WriteString(recordSet)
+		bufferedWriter.WriteString(recordSet)
 		count++
 
 		if count%50 == 0 {
-			writer.Flush()
+			bufferedWriter.Flush()
 		}
 	}
 
-	writer.Flush()
+	bufferedWriter.Flush()
+	zipWriter.Close()
+	zipFile.Close()
 	fmt.Printf("%d concurrent parses with time taken: %v", recordSets, time.Since(start))
 }
