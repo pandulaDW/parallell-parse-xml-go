@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func readAndUnmarshalByStream(reader *bufio.Reader, recordsPerRoutine int, ch chan<- string, prefix, category string) int {
+func readAndUnmarshalByStream(reader *bufio.Reader, recordsPerRoutine int, ch chan<- *string, prefix, category string) int {
 	sb := strings.Builder{}
 	recordCount := 0
 	shouldAppend := false
@@ -33,7 +33,8 @@ func readAndUnmarshalByStream(reader *bufio.Reader, recordsPerRoutine int, ch ch
 				if recordCount == recordsPerRoutine-1 {
 					sb.WriteString(fmt.Sprintf("</%v:%vRecords>\n", prefix, category))
 					sb.WriteString(fmt.Sprintf("</%v:%vData>\n", prefix, category))
-					go unmarshalRecords(sb.String(), ch, category)
+					str := sb.String()
+					go unmarshalRecords(&str, ch, category)
 					sb.Reset()
 					recordSets++
 					sb.WriteString(fmt.Sprintf("<%v:%vData>\n", prefix, category))
@@ -44,7 +45,8 @@ func readAndUnmarshalByStream(reader *bufio.Reader, recordsPerRoutine int, ch ch
 		}
 		if err == io.EOF {
 			if sb.Len() > 0 {
-				go unmarshalRecords(sb.String(), ch, category)
+				str := sb.String()
+				go unmarshalRecords(&str, ch, category)
 				recordSets++
 			}
 			return recordSets
