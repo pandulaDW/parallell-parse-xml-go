@@ -6,17 +6,20 @@ import (
 	"time"
 )
 
-func concurrentProcessing(model GliefModel, method string) {
+func concurrentProcessing(model GliefModel, inStage InputStage, outStage OutputStage) {
 	start := time.Now()
 	ch := make(chan *string)
 
-	bufferedReader, err := createBufferedReader(model, method)
+	bufferedReader, err := createBufferedReader(model, inStage)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	recordSets := readAndUnmarshalByStream(bufferedReader, ch, model)
-	bufferedWriter := createGzipWriter(model)
+	bufferedWriter, err := createBufferedWriter(model, outStage)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	header := createCsvHeader()
 	bufferedWriter.WriteString(header)

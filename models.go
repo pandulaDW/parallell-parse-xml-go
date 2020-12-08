@@ -20,11 +20,24 @@ type GliefFileOps interface {
 	unmarshal(content *string) *string
 }
 
-// GliefRelationship implement GliefFileOps methods
-type GliefRelationship struct {
-	GliefModel
-}
+// InputStage represents the input method of the processing pipeline
+type InputStage string
 
-func create() {
+const (
+	// XMLFileRead reads the xml file directly from the disk
+	XMLFileRead InputStage = "XMLFileRead"
+	// ZipFileRead reads the zip file directly from the disk
+	ZipFileRead InputStage = "ZipFileRead"
+	// DownloadZipRead downloads the zip file and process it
+	DownloadZipRead InputStage = "DownloadZipRead"
+)
 
-}
+// OutputStage represents the output method of the processing pipeline
+type OutputStage string
+
+const (
+	// CSVFileWrite write the csv file to disk
+	CSVFileWrite OutputStage = "CSVFileWrite"
+	// ZipFileWrite writes the zip file to disk
+	ZipFileWrite OutputStage = "ZipFileWrite"
+)
