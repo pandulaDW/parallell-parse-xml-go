@@ -11,15 +11,13 @@ func unmarshalRR(content *string) *string {
 	if err := xml.Unmarshal([]byte(*content), &records); err != nil {
 		fmt.Println(err)
 	}
-	sb := pool.Get().(strings.Builder)
+	sb := strings.Builder{}
 	for _, record := range records.RelationshipRecords {
 		row := convertToCSVRow(&record)
 		sb.WriteString(row)
 		sb.WriteByte('\n')
 	}
 	str := sb.String()
-	sb.Reset()
-	pool.Put(sb)
 	return &str
 }
 
@@ -28,15 +26,13 @@ func unmarshalLEI(content *string) *string {
 	if err := xml.Unmarshal([]byte(*content), &records); err != nil {
 		fmt.Println(err)
 	}
-	sb := pool.Get().(strings.Builder)
+	sb := strings.Builder{}
 	for _, record := range records.LEIRecords {
 		row := fmt.Sprintf("%v -> %v", record.LEI, record.Entity.LegalName)
 		sb.WriteString(row)
 		sb.WriteByte('\n')
 	}
 	str := sb.String()
-	sb.Reset()
-	pool.Put(sb)
 	return &str
 }
 

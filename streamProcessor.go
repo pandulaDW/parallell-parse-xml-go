@@ -8,7 +8,8 @@ import (
 	"strings"
 )
 
-func readAndUnmarshalByStream(reader *bufio.Reader, recordsPerRoutine int, ch chan<- *string, prefix, category string) int {
+func readAndUnmarshalByStream(reader *bufio.Reader, ch chan<- *string, model GliefModel) int {
+	prefix, category, recordsPerRoutine := model.prefix, model.category, model.recordsPerRoutine
 	sb := strings.Builder{}
 	recordCount := 0
 	shouldAppend := false

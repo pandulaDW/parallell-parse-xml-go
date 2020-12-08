@@ -1,25 +1,22 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"log"
 	"time"
 )
 
-func concurrentProcessing(prefix, category string) {
+func concurrentProcessing(model GliefModel, method string) {
 	start := time.Now()
 	ch := make(chan *string)
 
-	bufferedReader, err := createBufferedReader("data/20201202-gleif-concatenated-file-lei2.xml.5fc7579cab4ee.zip")
+	bufferedReader, err := createBufferedReader(model, method)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	recordSets := readAndUnmarshalByStream(bufferedReader, 4000, ch, prefix, category)
-
-	zipWriter, zipFile := createGzipWriter("file.zip", "testfile.csv")
-	bufferedWriter := bufio.NewWriter(zipWriter)
+	recordSets := readAndUnmarshalByStream(bufferedReader, ch, model)
+	bufferedWriter := createGzipWriter(model)
 
 	header := createCsvHeader()
 	bufferedWriter.WriteString(header)
@@ -37,7 +34,5 @@ func concurrentProcessing(prefix, category string) {
 	}
 
 	bufferedWriter.Flush()
-	zipWriter.Close()
-	zipFile.Close()
 	fmt.Printf("%d concurrent parses with time taken: %v", recordSets, time.Since(start))
 }
