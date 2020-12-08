@@ -8,7 +8,7 @@ type GliefModel struct {
 	category          string
 	recordsPerRoutine int
 	xmlFileName       string
-	archiveFileName   string
+	zipFileName       string
 	GZipFileName      string
 	csvFileName       string
 	url               string
@@ -28,7 +28,7 @@ const (
 	XMLFileRead InputStage = "XMLFileRead"
 	// ZipFileRead reads the zip file directly from the disk
 	ZipFileRead InputStage = "ZipFileRead"
-	// DownloadZipRead downloads the zip file and process it
+	// DownloadZipRead downloads the zip file and process it in memory
 	DownloadZipRead InputStage = "DownloadZipRead"
 )
 
@@ -41,3 +41,19 @@ const (
 	// ZipFileWrite writes the zip file to disk
 	ZipFileWrite OutputStage = "ZipFileWrite"
 )
+
+// returns the model definition for Relationship file type with sensible defaults
+func createRelationshipModel() *GliefModel {
+	rrModel := GliefModel{prefix: "rr", category: "Relationship"}
+	rrModel.recordsPerRoutine = 1000
+	rrModel.csvFileName = "rrFile.csv"
+	return &rrModel
+}
+
+// returns the model definition for LEI file type with sensible defaults
+func createLEIModel() *GliefModel {
+	leiModel := GliefModel{prefix: "lei", category: "LEI"}
+	leiModel.recordsPerRoutine = 2000
+	leiModel.csvFileName = "leiFile.csv"
+	return &leiModel
+}

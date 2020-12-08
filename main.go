@@ -1,9 +1,8 @@
 package main
 
 func main() {
-	rrModel := GliefModel{prefix: "rr", category: "Relationship", recordsPerRoutine: 1000}
-	rrModel.archiveFileName = "data/20201203-gleif-concatenated-file-rr.xml.5fc8c1302bde7.zip"
-	rrModel.GZipFileName = "data/file.zip"
-	rrModel.csvFileName = "rr.csv"
-	concurrentProcessing(rrModel, ZipFileRead, CSVFileWrite)
+	// rrModel := GliefModel{prefix: "rr", category: "Relationship", recordsPerRoutine: 1000}
+	leiModel := createLEIModel()
+	leiModel.zipFileName = "data/20201202-gleif-concatenated-file-lei2.xml.5fc7579cab4ee.zip"
+	concurrentProcessing(*leiModel, ZipFileRead, CSVFileWrite)
 }

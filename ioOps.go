@@ -14,7 +14,7 @@ func createBufferedReader(model GliefModel, inStage InputStage) (*bufio.Reader, 
 	case XMLFileRead:
 		return createBufferedFileReader(model.xmlFileName)
 	case ZipFileRead:
-		return createBufferedZipFileReader(model.archiveFileName)
+		return createBufferedZipFileReader(model.zipFileName)
 	case DownloadZipRead:
 		return createBufferedDownloadReader(model.url)
 	default:
