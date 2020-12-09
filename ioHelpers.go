@@ -45,6 +45,11 @@ func unzipFilesInMemory(zipContent []byte) ([]byte, error) {
 	return allContent, nil
 }
 
+func unzipFilesToDisk(unzippedContent []byte, filename string) error {
+	err := ioutil.WriteFile(filename, unzippedContent, 0666)
+	return err
+}
+
 func readZipFile(zf *zip.File) ([]byte, error) {
 	f, err := zf.Open()
 	if err != nil {

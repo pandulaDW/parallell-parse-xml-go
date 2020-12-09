@@ -6,6 +6,7 @@ import (
 	"compress/gzip"
 	"io/ioutil"
 	"os"
+	"runtime"
 )
 
 // creates the buffered reader based on the input processing stage
@@ -17,6 +18,10 @@ func createBufferedReader(model GliefModel, inStage InputStage) (*bufio.Reader, 
 		return createBufferedZipFileReader(model.zipFileName)
 	case DownloadZipRead:
 		return createBufferedDownloadReader(model.url)
+	case XMLDownloadAndRead:
+		return createDownloadWriteAndReader(model.url, model.xmlFileName)
+	case XMLWriteAndRead:
+		return createReadWriteAndReader(model.zipFileName, model.xmlFileName)
 	default:
 		return nil, nil
 	}
@@ -69,6 +74,40 @@ func createBufferedDownloadReader(url string) (*bufio.Reader, error) {
 	}
 	content, err := unzipFilesInMemory(zippedContent)
 	return bufio.NewReader(bytes.NewReader(content)), err
+}
+
+func createDownloadWriteAndReader(url, filename string) (*bufio.Reader, error) {
+	zippedContent, err := downloadFileToMemory(url)
+	if err != nil {
+		return nil, err
+	}
+	content, err := unzipFilesInMemory(zippedContent)
+	if err != nil {
+		return nil, err
+	}
+	err = unzipFilesToDisk(content, filename)
+	if err != nil {
+		return nil, err
+	}
+	return createBufferedFileReader(filename)
+}
+
+func createReadWriteAndReader(zipFile, filename string) (*bufio.Reader, error) {
+	zippedContent, err := ioutil.ReadFile(zipFile)
+	if err != nil {
+		return nil, err
+	}
+	content, err := unzipFilesInMemory(zippedContent)
+	if err != nil {
+		return nil, err
+	}
+	err = unzipFilesToDisk(content, filename)
+	if err != nil {
+		return nil, err
+	}
+	content = nil
+	runtime.GC()
+	return createBufferedFileReader(filename)
 }
 
 // Writers ------------------------------------------------------

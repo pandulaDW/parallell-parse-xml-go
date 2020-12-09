@@ -26,6 +26,10 @@ type InputStage string
 const (
 	// XMLFileRead reads the xml file directly from the disk
 	XMLFileRead InputStage = "XMLFileRead"
+	// XMLDownloadAndRead downloads, writes the zip content to a file and then stream read from that file
+	XMLDownloadAndRead InputStage = "XMLDownloadAndRead"
+	// XMLWriteAndRead reads, writes the zip content to a file and then stream read from that file
+	XMLWriteAndRead InputStage = "XMLWriteAndRead"
 	// ZipFileRead reads the zip file directly from the disk
 	ZipFileRead InputStage = "ZipFileRead"
 	// DownloadZipRead downloads the zip file and process it in memory
@@ -55,5 +59,6 @@ func createLEIModel() *GliefModel {
 	leiModel := GliefModel{prefix: "lei", category: "LEI"}
 	leiModel.recordsPerRoutine = 2000
 	leiModel.csvFileName = "leiFile.csv"
+	leiModel.xmlFileName = "leiXML.xml"
 	return &leiModel
 }
