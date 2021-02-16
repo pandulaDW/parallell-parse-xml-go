@@ -21,7 +21,7 @@ func concurrentProcessing(model GliefModel, inStage InputStage, outStage OutputS
 		log.Fatal(err)
 	}
 
-	header := createCsvHeader()
+	header := createCsvHeader(&model)
 	_, _ = bufferedWriter.WriteString(header)
 	_ = bufferedWriter.WriteByte('\n')
 

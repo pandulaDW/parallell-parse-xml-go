@@ -6,8 +6,14 @@ import (
 	"strings"
 )
 
-func createCsvHeader() string {
-	colNames := CsvColNames{}
+func createCsvHeader(model *GliefModel) string {
+	var colNames interface{}
+	switch {
+	case model.prefix == "rr":
+		colNames = CsvColNamesRR{}
+	case model.prefix == "repex":
+		colNames = CsvColNamesRepex{}
+	}
 	colNamesType := reflect.ValueOf(colNames).Type()
 	sb := make([]string, colNamesType.NumField())
 
@@ -18,7 +24,7 @@ func createCsvHeader() string {
 	return strings.Join(sb, ",")
 }
 
-func convertToCSVRow(r *RelationshipRecord) string {
+func convertToCSVRowRR(r *RelationshipRecord) string {
 	rowContent := make([]string, 10)
 	rowContent[0] = fmt.Sprintf(`"%v","%v","%v","%v","%v"`,
 		r.Relationship.StartNodeID,
@@ -77,6 +83,15 @@ func convertToCSVRow(r *RelationshipRecord) string {
 	)
 
 	return strings.Join(rowContent, ",")
+}
+
+func convertToCSVRowRepex(repex *Exception) string {
+	row := fmt.Sprintf(`"%v","%v","%v"`,
+		repex.LEI,
+		repex.ExceptionCategory,
+		repex.ExceptionReason,
+	)
+	return row
 }
 
 func replaceDoubleQuotes(s string) string {

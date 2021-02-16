@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
-	"os"
 	"strings"
 )
 
@@ -14,7 +13,7 @@ func unmarshalRR(content *string) *string {
 	}
 	sb := strings.Builder{}
 	for _, record := range records.RelationshipRecords {
-		row := convertToCSVRow(&record)
+		row := convertToCSVRowRR(&record)
 		sb.WriteString(row)
 		sb.WriteByte('\n')
 	}
@@ -41,12 +40,10 @@ func unmarshalRepex(content *string) *string {
 	records := ReportingExceptionData{}
 	if err := xml.Unmarshal([]byte(*content), &records); err != nil {
 		fmt.Println(err)
-		fmt.Println(*content)
-		os.Exit(1)
 	}
 	sb := strings.Builder{}
 	for _, record := range records.ReportingExceptions {
-		row := fmt.Sprintf("%v -> %v", record.LEI, record.LEI)
+		row := convertToCSVRowRepex(&record)
 		sb.WriteString(row)
 		sb.WriteByte('\n')
 	}
