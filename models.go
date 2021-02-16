@@ -62,3 +62,11 @@ func createLEIModel() *GliefModel {
 	leiModel.xmlFileName = "leiXML.xml"
 	return &leiModel
 }
+
+// returns the model definition for Reporting exception file type with sensible defaults
+func createReportingExceptionModel() *GliefModel {
+	rrModel := GliefModel{prefix: "repex", category: "Exception"}
+	rrModel.recordsPerRoutine = 1000
+	rrModel.csvFileName = "repexFile.csv"
+	return &rrModel
+}

@@ -22,20 +22,20 @@ func concurrentProcessing(model GliefModel, inStage InputStage, outStage OutputS
 	}
 
 	header := createCsvHeader()
-	bufferedWriter.WriteString(header)
-	bufferedWriter.WriteByte('\n')
+	_, _ = bufferedWriter.WriteString(header)
+	_ = bufferedWriter.WriteByte('\n')
 
 	count := 0
 	for count < recordSets {
 		recordSet := <-ch
-		bufferedWriter.WriteString(*recordSet)
+		_, _ = bufferedWriter.WriteString(*recordSet)
 		count++
 
 		if count%50 == 0 {
-			bufferedWriter.Flush()
+			_ = bufferedWriter.Flush()
 		}
 	}
 
-	bufferedWriter.Flush()
+	_ = bufferedWriter.Flush()
 	fmt.Printf("%d concurrent parses with time taken: %v", recordSets, time.Since(start))
 }
