@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -37,9 +38,11 @@ func unmarshalLEI(content *string) *string {
 }
 
 func unmarshalRepex(content *string) *string {
-	records := RepexData{}
+	records := ReportingExceptionData{}
 	if err := xml.Unmarshal([]byte(*content), &records); err != nil {
 		fmt.Println(err)
+		fmt.Println(*content)
+		os.Exit(1)
 	}
 	sb := strings.Builder{}
 	for _, record := range records.ReportingExceptions {

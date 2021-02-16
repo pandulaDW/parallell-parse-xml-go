@@ -1,7 +1,7 @@
 package main
 
-// RepexData holds all the exception data
-type RepexData struct {
+// ReportingExceptionData holds all the exception data
+type ReportingExceptionData struct {
 	ReportingExceptions []Exception `xml:"ReportingExceptions>Exception"`
 }
 

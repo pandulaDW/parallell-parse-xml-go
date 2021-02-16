@@ -18,8 +18,8 @@ func readAndUnmarshalByStream(reader *bufio.Reader, ch chan<- *string, model Gli
 		sb.WriteString(fmt.Sprintf("<%v:%vData>\n", prefix, category))
 		sb.WriteString(fmt.Sprintf("<%v:%vRecords>\n", prefix, category))
 	} else {
-		sb.WriteString("<repex:ReportingExceptionData>")
-		sb.WriteString("<repex:ReportingExceptions>")
+		sb.WriteString("<repex:ReportingExceptionData>\n")
+		sb.WriteString("<repex:ReportingExceptions>\n")
 	}
 
 	// buffered reading and forking goroutines
@@ -33,7 +33,7 @@ func readAndUnmarshalByStream(reader *bufio.Reader, ch chan<- *string, model Gli
 			shouldAppend = true
 			sb.WriteString(line)
 
-			if isRecordStart(line, &model, shouldAppend) {
+			if isRecordEnd(line, &model) {
 				recordCount++
 
 				if recordCount == recordsPerRoutine-1 {
@@ -41,8 +41,8 @@ func readAndUnmarshalByStream(reader *bufio.Reader, ch chan<- *string, model Gli
 						sb.WriteString(fmt.Sprintf("</%v:%vRecords>\n", prefix, category))
 						sb.WriteString(fmt.Sprintf("</%v:%vData>\n", prefix, category))
 					} else {
-						sb.WriteString("</repex:ReportingExceptions>")
-						sb.WriteString("</repex:ReportingExceptionData>")
+						sb.WriteString("</repex:ReportingExceptions>\n")
+						sb.WriteString("</repex:ReportingExceptionData>\n")
 					}
 					str := sb.String()
 					go unmarshalRecords(&str, ch, category)
@@ -52,8 +52,8 @@ func readAndUnmarshalByStream(reader *bufio.Reader, ch chan<- *string, model Gli
 						sb.WriteString(fmt.Sprintf("<%v:%vData>\n", prefix, category))
 						sb.WriteString(fmt.Sprintf("<%v:%vRecords>\n", prefix, category))
 					} else {
-						sb.WriteString("<repex:ReportingExceptionData>")
-						sb.WriteString("<repex:ReportingExceptions>")
+						sb.WriteString("<repex:ReportingExceptionData>\n")
+						sb.WriteString("<repex:ReportingExceptions>\n")
 					}
 					recordCount = 0
 				}
@@ -77,7 +77,19 @@ func isRecordStart(line string, model *GliefModel, shouldAppend bool) bool {
 	if category != "Exception" {
 		recordStart = strings.Contains(line, fmt.Sprintf("<%v:%vRecord>\n", prefix, category)) || shouldAppend
 	} else {
-		recordStart = strings.Contains(line, "<repex:Exception>") || shouldAppend
+		recordStart = strings.Contains(line, "<repex:Exception>\n") || shouldAppend
 	}
 	return recordStart
+}
+
+// isRecordEnd checks if the line is an end of a record
+func isRecordEnd(line string, model *GliefModel) bool {
+	var recordEnd bool
+	prefix, category := model.prefix, model.category
+	if category != "Exception" {
+		recordEnd = strings.Contains(line, fmt.Sprintf("</%v:%vRecord>\n", prefix, category))
+	} else {
+		recordEnd = strings.Contains(line, "</repex:Exception>\n")
+	}
+	return recordEnd
 }

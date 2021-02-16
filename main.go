@@ -1,7 +1,7 @@
 package main
 
 func main() {
-	leiModel := createLEIModel()
-	leiModel.zipFileName = "data/20201202-gleif-concatenated-file-lei2.xml.5fc7579cab4ee.zip"
-	concurrentProcessing(*leiModel, XMLWriteAndRead, CSVFileWrite)
+	repexModel := createReportingExceptionModel()
+	repexModel.xmlFileName = "data/20210216-gleif-concatenated-file-repex.xml"
+	concurrentProcessing(*repexModel, XMLFileRead, CSVFileWrite)
 }
