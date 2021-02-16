@@ -36,6 +36,21 @@ func unmarshalLEI(content *string) *string {
 	return &str
 }
 
+func unmarshalRepex(content *string) *string {
+	records := RepexData{}
+	if err := xml.Unmarshal([]byte(*content), &records); err != nil {
+		fmt.Println(err)
+	}
+	sb := strings.Builder{}
+	for _, record := range records.ReportingExceptions {
+		row := fmt.Sprintf("%v -> %v", record.LEI, record.LEI)
+		sb.WriteString(row)
+		sb.WriteByte('\n')
+	}
+	str := sb.String()
+	return &str
+}
+
 func unmarshalRecords(content *string, ch chan<- *string, category string) {
 	var rows *string
 	switch {
@@ -43,6 +58,8 @@ func unmarshalRecords(content *string, ch chan<- *string, category string) {
 		rows = unmarshalRR(content)
 	case category == "LEI":
 		rows = unmarshalLEI(content)
+	case category == "Exception":
+		rows = unmarshalRepex(content)
 	}
 	ch <- rows
 }

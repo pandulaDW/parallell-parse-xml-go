@@ -14,8 +14,13 @@ func readAndUnmarshalByStream(reader *bufio.Reader, ch chan<- *string, model Gli
 	recordCount := 0
 	shouldAppend := false
 	recordSets := 0
-	sb.WriteString(fmt.Sprintf("<%v:%vData>\n", prefix, category))
-	sb.WriteString(fmt.Sprintf("<%v:%vRecords>\n", prefix, category))
+	if category != "Exception" {
+		sb.WriteString(fmt.Sprintf("<%v:%vData>\n", prefix, category))
+		sb.WriteString(fmt.Sprintf("<%v:%vRecords>\n", prefix, category))
+	} else {
+		sb.WriteString("<repex:ReportingExceptionData>")
+		sb.WriteString("<repex:ReportingExceptions>")
+	}
 
 	// buffered reading and forking goroutines
 	for {
@@ -24,22 +29,32 @@ func readAndUnmarshalByStream(reader *bufio.Reader, ch chan<- *string, model Gli
 			log.Fatal(err)
 		}
 
-		if strings.Contains(line, fmt.Sprintf("<%v:%vRecord>\n", prefix, category)) || shouldAppend {
+		if isRecordStart(line, &model, shouldAppend) {
 			shouldAppend = true
 			sb.WriteString(line)
 
-			if strings.Contains(line, fmt.Sprintf("</%v:%vRecord>\n", prefix, category)) {
+			if isRecordStart(line, &model, shouldAppend) {
 				recordCount++
 
 				if recordCount == recordsPerRoutine-1 {
-					sb.WriteString(fmt.Sprintf("</%v:%vRecords>\n", prefix, category))
-					sb.WriteString(fmt.Sprintf("</%v:%vData>\n", prefix, category))
+					if category != "Exception" {
+						sb.WriteString(fmt.Sprintf("</%v:%vRecords>\n", prefix, category))
+						sb.WriteString(fmt.Sprintf("</%v:%vData>\n", prefix, category))
+					} else {
+						sb.WriteString("</repex:ReportingExceptions>")
+						sb.WriteString("</repex:ReportingExceptionData>")
+					}
 					str := sb.String()
 					go unmarshalRecords(&str, ch, category)
 					sb.Reset()
 					recordSets++
-					sb.WriteString(fmt.Sprintf("<%v:%vData>\n", prefix, category))
-					sb.WriteString(fmt.Sprintf("<%v:%vRecords>\n", prefix, category))
+					if category != "Exception" {
+						sb.WriteString(fmt.Sprintf("<%v:%vData>\n", prefix, category))
+						sb.WriteString(fmt.Sprintf("<%v:%vRecords>\n", prefix, category))
+					} else {
+						sb.WriteString("<repex:ReportingExceptionData>")
+						sb.WriteString("<repex:ReportingExceptions>")
+					}
 					recordCount = 0
 				}
 			}
@@ -53,4 +68,16 @@ func readAndUnmarshalByStream(reader *bufio.Reader, ch chan<- *string, model Gli
 			return recordSets
 		}
 	}
+}
+
+// isRecordStart checks if the line is a start of a record
+func isRecordStart(line string, model *GliefModel, shouldAppend bool) bool {
+	var recordStart bool
+	prefix, category := model.prefix, model.category
+	if category != "Exception" {
+		recordStart = strings.Contains(line, fmt.Sprintf("<%v:%vRecord>\n", prefix, category)) || shouldAppend
+	} else {
+		recordStart = strings.Contains(line, "<repex:Exception>") || shouldAppend
+	}
+	return recordStart
 }
