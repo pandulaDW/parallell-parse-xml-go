@@ -1,10 +1,27 @@
 package main
 
-func main() {
-	//repexModel := createReportingExceptionModel()
-	//repexModel.xmlFileName = "data/20210216-gleif-concatenated-file-repex.xml"
-	//repexModel.csvFileName = "data/repexCSV.csv"
-	//concurrentProcessing(*repexModel, XMLFileRead, CSVFileWrite)
+import (
+	"fmt"
+	"strings"
+)
 
-	test()
+func main() {
+	fmt.Println("Processing started...")
+	processingInServer()
+	fmt.Println(strings.Repeat("-", 50))
+}
+
+func processingInServer() {
+	rrModel := createRelationshipModel()
+	leiModel := createLEIModel()
+	repexModel := createReportingExceptionModel()
+
+	concurrentProcessing(*rrModel, XMLDownloadAndRead, CSVFileWrite)
+	fmt.Println("Finished processing relationship file")
+
+	concurrentProcessing(*leiModel, XMLDownloadAndRead, CSVFileWrite)
+	fmt.Println("Finished processing lei file")
+
+	concurrentProcessing(*repexModel, XMLDownloadAndRead, CSVFileWrite)
+	fmt.Println("Finished processing repex file")
 }

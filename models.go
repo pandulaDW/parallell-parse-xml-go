@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"time"
+)
+
 // GliefModel includes information needed for Glief file processing
 // Based on the processing stage, (testFile, testRar, testAWS) different
 // properties will be used
@@ -12,12 +17,6 @@ type GliefModel struct {
 	GZipFileName      string
 	csvFileName       string
 	url               string
-}
-
-// GliefFileOps includes operations that should be performed for Glief files
-type GliefFileOps interface {
-	create() GliefModel
-	unmarshal(content *string) *string
 }
 
 // InputStage represents the input method of the processing pipeline
@@ -46,11 +45,18 @@ const (
 	ZipFileWrite OutputStage = "ZipFileWrite"
 )
 
+func createUrl(prefix string) string {
+	day := time.Now().AddDate(0, 0, -1).Format("20060102")
+	url := fmt.Sprintf("https://leidata.gleif.org/api/v1/concatenated-files/%s/%s/zip", prefix, day)
+	return url
+}
+
 // returns the model definition for Relationship file type with sensible defaults
 func createRelationshipModel() *GliefModel {
 	rrModel := GliefModel{prefix: "rr", category: "Relationship"}
 	rrModel.recordsPerRoutine = 1000
-	rrModel.csvFileName = "rrFile.csv"
+	rrModel.csvFileName = "data/rrFile.csv"
+	rrModel.url = createUrl("rr")
 	return &rrModel
 }
 
@@ -58,15 +64,17 @@ func createRelationshipModel() *GliefModel {
 func createLEIModel() *GliefModel {
 	leiModel := GliefModel{prefix: "lei", category: "LEI"}
 	leiModel.recordsPerRoutine = 2000
-	leiModel.csvFileName = "leiFile.csv"
+	leiModel.csvFileName = "data/leiFile.csv"
 	leiModel.xmlFileName = "leiXML.xml"
+	leiModel.url = createUrl("lei2") // url is defined as this
 	return &leiModel
 }
 
 // returns the model definition for Reporting exception file type with sensible defaults
 func createReportingExceptionModel() *GliefModel {
-	rrModel := GliefModel{prefix: "repex", category: "Exception"}
-	rrModel.recordsPerRoutine = 1000
-	rrModel.csvFileName = "repexFile.csv"
-	return &rrModel
+	repexModel := GliefModel{prefix: "repex", category: "Exception"}
+	repexModel.recordsPerRoutine = 1000
+	repexModel.csvFileName = "data/repexFile.csv"
+	repexModel.url = createUrl("repex")
+	return &repexModel
 }
