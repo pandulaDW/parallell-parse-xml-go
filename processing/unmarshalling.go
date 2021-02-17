@@ -1,19 +1,21 @@
-package main
+package processing
 
 import (
 	"encoding/xml"
 	"fmt"
+	"github.com/pandulaDW/parallell-parse-xml-go/csv"
+	"github.com/pandulaDW/parallell-parse-xml-go/models"
 	"strings"
 )
 
 func unmarshalRR(content *string) *string {
-	records := RelationshipData{}
+	records := models.RelationshipData{}
 	if err := xml.Unmarshal([]byte(*content), &records); err != nil {
 		fmt.Println(err)
 	}
 	sb := strings.Builder{}
 	for _, record := range records.RelationshipRecords {
-		row := convertToCSVRowRR(&record)
+		row := csv.ConvertToCSVRowRR(&record)
 		sb.WriteString(row)
 		sb.WriteByte('\n')
 	}
@@ -22,13 +24,13 @@ func unmarshalRR(content *string) *string {
 }
 
 func unmarshalLEI(content *string) *string {
-	records := LEIData{}
+	records := models.LEIData{}
 	if err := xml.Unmarshal([]byte(*content), &records); err != nil {
 		fmt.Println(err)
 	}
 	sb := strings.Builder{}
 	for _, record := range records.LEIRecords {
-		row := convertToCSVRowLEI(&record)
+		row := csv.ConvertToCSVRowLEI(&record)
 		sb.WriteString(row)
 		sb.WriteByte('\n')
 	}
@@ -37,13 +39,13 @@ func unmarshalLEI(content *string) *string {
 }
 
 func unmarshalRepex(content *string) *string {
-	records := ReportingExceptionData{}
+	records := models.ReportingExceptionData{}
 	if err := xml.Unmarshal([]byte(*content), &records); err != nil {
 		fmt.Println(err)
 	}
 	sb := strings.Builder{}
 	for _, record := range records.ReportingExceptions {
-		row := convertToCSVRowRepex(&record)
+		row := csv.ConvertToCSVRowRepex(&record)
 		sb.WriteString(row)
 		sb.WriteByte('\n')
 	}

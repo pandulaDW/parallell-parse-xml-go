@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/pandulaDW/parallell-parse-xml-go/models"
+	"github.com/pandulaDW/parallell-parse-xml-go/processing"
 	"strings"
 )
 
@@ -12,16 +14,16 @@ func main() {
 }
 
 func processingInServer() {
-	rrModel := createRelationshipModel()
-	leiModel := createLEIModel()
-	repexModel := createReportingExceptionModel()
+	rrModel := models.CreateRelationshipModel()
+	leiModel := models.CreateLEIModel()
+	repexModel := models.CreateReportingExceptionModel()
 
-	concurrentProcessing(*rrModel, XMLDownloadAndRead, CSVFileWrite)
+	processing.ConcurrentProcessing(*rrModel, models.XMLDownloadAndRead, models.CSVFileWrite)
 	fmt.Println("Finished processing relationship file")
 
-	concurrentProcessing(*leiModel, XMLDownloadAndRead, CSVFileWrite)
+	processing.ConcurrentProcessing(*leiModel, models.XMLDownloadAndRead, models.CSVFileWrite)
 	fmt.Println("Finished processing lei file")
 
-	concurrentProcessing(*repexModel, XMLDownloadAndRead, CSVFileWrite)
+	processing.ConcurrentProcessing(*repexModel, models.XMLDownloadAndRead, models.CSVFileWrite)
 	fmt.Println("Finished processing repex file")
 }

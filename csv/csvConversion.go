@@ -1,20 +1,22 @@
-package main
+package csv
 
 import (
 	"fmt"
+	"github.com/pandulaDW/parallell-parse-xml-go/models"
 	"reflect"
 	"strings"
 )
 
-func createCsvHeader(model *GliefModel) string {
+// CreateCsvHeader will create a header based on the file type
+func CreateCsvHeader(model *models.GliefModel) string {
 	var colNames interface{}
 	switch {
-	case model.prefix == "rr":
-		colNames = CsvColNamesRR{}
-	case model.prefix == "lei":
-		colNames = CsvColNamesLEI{}
-	case model.prefix == "repex":
-		colNames = CsvColNamesRepex{}
+	case model.Prefix == "rr":
+		colNames = ColNamesRR{}
+	case model.Prefix == "lei":
+		colNames = ColNamesLEI{}
+	case model.Prefix == "repex":
+		colNames = ColNamesRepex{}
 	}
 	colNamesType := reflect.ValueOf(colNames).Type()
 	sb := make([]string, colNamesType.NumField())
@@ -26,7 +28,8 @@ func createCsvHeader(model *GliefModel) string {
 	return strings.Join(sb, ",")
 }
 
-func convertToCSVRowRR(r *RelationshipRecord) string {
+// ConvertToCSVRowRR creates a row based on a relationship record
+func ConvertToCSVRowRR(r *models.RelationshipRecord) string {
 	rowContent := make([]string, 10)
 	rowContent[0] = fmt.Sprintf(`"%v","%v","%v","%v","%v"`,
 		r.Relationship.StartNodeID,
@@ -87,7 +90,8 @@ func convertToCSVRowRR(r *RelationshipRecord) string {
 	return strings.Join(rowContent, ",")
 }
 
-func convertToCSVRowLEI(lei *LEIRecord) string {
+// ConvertToCSVRowLEI creates a row based on a lei record
+func ConvertToCSVRowLEI(lei *models.LEIRecord) string {
 	rowContent := make([]string, 10)
 	rowContent[0] = fmt.Sprintf(`"%v","%v","%v"`,
 		lei.LEI,
@@ -139,7 +143,8 @@ func convertToCSVRowLEI(lei *LEIRecord) string {
 	return strings.Join(rowContent, ",")
 }
 
-func convertToCSVRowRepex(repex *Exception) string {
+// ConvertToCSVRowRepex creates a row based on a repex record
+func ConvertToCSVRowRepex(repex *models.Exception) string {
 	row := fmt.Sprintf(`"%v","%v","%v"`,
 		repex.LEI,
 		repex.ExceptionCategory,

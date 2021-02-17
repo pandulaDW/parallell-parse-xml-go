@@ -1,15 +1,16 @@
-package main
+package processing
 
 import (
 	"bufio"
 	"fmt"
+	"github.com/pandulaDW/parallell-parse-xml-go/models"
 	"io"
 	"log"
 	"strings"
 )
 
-func readAndUnmarshalByStream(reader *bufio.Reader, ch chan<- *string, model GliefModel) int {
-	prefix, category, recordsPerRoutine := model.prefix, model.category, model.recordsPerRoutine
+func readAndUnmarshalByStream(reader *bufio.Reader, ch chan<- *string, model models.GliefModel) int {
+	prefix, category, recordsPerRoutine := model.Prefix, model.Category, model.RecordsPerRoutine
 	sb := strings.Builder{}
 	recordCount := 0
 	shouldAppend := false
@@ -71,9 +72,9 @@ func readAndUnmarshalByStream(reader *bufio.Reader, ch chan<- *string, model Gli
 }
 
 // isRecordStart checks if the line is a start of a record
-func isRecordStart(line string, model *GliefModel, shouldAppend bool) bool {
+func isRecordStart(line string, model *models.GliefModel, shouldAppend bool) bool {
 	var recordStart bool
-	prefix, category := model.prefix, model.category
+	prefix, category := model.Prefix, model.Category
 	if category != "Exception" {
 		recordStart = strings.Contains(line, fmt.Sprintf("<%v:%vRecord>\n", prefix, category)) || shouldAppend
 	} else {
@@ -83,9 +84,9 @@ func isRecordStart(line string, model *GliefModel, shouldAppend bool) bool {
 }
 
 // isRecordEnd checks if the line is an end of a record
-func isRecordEnd(line string, model *GliefModel) bool {
+func isRecordEnd(line string, model *models.GliefModel) bool {
 	var recordEnd bool
-	prefix, category := model.prefix, model.category
+	prefix, category := model.Prefix, model.Category
 	if category != "Exception" {
 		recordEnd = strings.Contains(line, fmt.Sprintf("</%v:%vRecord>\n", prefix, category))
 	} else {

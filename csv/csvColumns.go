@@ -1,7 +1,7 @@
-package main
+package csv
 
 // CsvColNamesRR contains column names of the written csv file of RR file
-type CsvColNamesRR struct {
+type ColNamesRR struct {
 	StartNodeID                  string
 	StartNodeIDType              string
 	EndNodeID                    string
@@ -35,7 +35,7 @@ type CsvColNamesRR struct {
 }
 
 // CsvColNamesLEI contains column names of the written csv file LEI data file
-type CsvColNamesLEI struct {
+type ColNamesLEI struct {
 	LEI                                      string
 	LegalName                                string
 	OtherEntityName1                         string
@@ -74,7 +74,7 @@ type CsvColNamesLEI struct {
 }
 
 // CsvColNamesRepex contains column names of the written csv file Repex file
-type CsvColNamesRepex struct {
+type ColNamesRepex struct {
 	LEI               string
 	ExceptionCategory string
 	ExceptionReason   string

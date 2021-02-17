@@ -1,4 +1,4 @@
-package main
+package models
 
 // LEIData is the parent of LEIRecords
 type LEIData struct {

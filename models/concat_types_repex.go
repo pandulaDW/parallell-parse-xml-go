@@ -1,4 +1,4 @@
-package main
+package models
 
 // ReportingExceptionData holds all the exception data
 type ReportingExceptionData struct {

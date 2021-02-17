@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"fmt"
@@ -9,14 +9,14 @@ import (
 // Based on the processing stage, (testFile, testRar, testAWS) different
 // properties will be used
 type GliefModel struct {
-	prefix            string
-	category          string
-	recordsPerRoutine int
-	xmlFileName       string
-	zipFileName       string
+	Prefix            string
+	Category          string
+	RecordsPerRoutine int
+	XmlFileName       string
+	ZipFileName       string
 	GZipFileName      string
-	csvFileName       string
-	url               string
+	CsvFileName       string
+	Url               string
 }
 
 // InputStage represents the input method of the processing pipeline
@@ -51,30 +51,30 @@ func createUrl(prefix string) string {
 	return url
 }
 
-// returns the model definition for Relationship file type with sensible defaults
-func createRelationshipModel() *GliefModel {
-	rrModel := GliefModel{prefix: "rr", category: "Relationship"}
-	rrModel.recordsPerRoutine = 1000
-	rrModel.csvFileName = "data/rrFile.csv"
-	rrModel.url = createUrl("rr")
+// CreateRelationshipModel returns the model definition for Relationship file type with sensible defaults
+func CreateRelationshipModel() *GliefModel {
+	rrModel := GliefModel{Prefix: "rr", Category: "Relationship"}
+	rrModel.RecordsPerRoutine = 1000
+	rrModel.CsvFileName = "data/rrFile.csv"
+	rrModel.Url = createUrl("rr")
 	return &rrModel
 }
 
-// returns the model definition for LEI file type with sensible defaults
-func createLEIModel() *GliefModel {
-	leiModel := GliefModel{prefix: "lei", category: "LEI"}
-	leiModel.recordsPerRoutine = 2000
-	leiModel.csvFileName = "data/leiFile.csv"
-	leiModel.xmlFileName = "leiXML.xml"
-	leiModel.url = createUrl("lei2") // url is defined as this
+// CreateLEIModel returns the model definition for LEI file type with sensible defaults
+func CreateLEIModel() *GliefModel {
+	leiModel := GliefModel{Prefix: "lei", Category: "LEI"}
+	leiModel.RecordsPerRoutine = 2000
+	leiModel.CsvFileName = "data/leiFile.csv"
+	leiModel.XmlFileName = "leiXML.xml"
+	leiModel.Url = createUrl("lei2") // url is defined as this
 	return &leiModel
 }
 
-// returns the model definition for Reporting exception file type with sensible defaults
-func createReportingExceptionModel() *GliefModel {
-	repexModel := GliefModel{prefix: "repex", category: "Exception"}
-	repexModel.recordsPerRoutine = 1000
-	repexModel.csvFileName = "data/repexFile.csv"
-	repexModel.url = createUrl("repex")
+// CreateReportingExceptionModel returns the model definition for Reporting exception file type with sensible defaults
+func CreateReportingExceptionModel() *GliefModel {
+	repexModel := GliefModel{Prefix: "repex", Category: "Exception"}
+	repexModel.RecordsPerRoutine = 1000
+	repexModel.CsvFileName = "data/repexFile.csv"
+	repexModel.Url = createUrl("repex")
 	return &repexModel
 }

@@ -1,4 +1,4 @@
-package main
+package models
 
 // RelationshipData is the parent of RelationshipRecord
 type RelationshipData struct {

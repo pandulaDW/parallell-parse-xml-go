@@ -1,27 +1,31 @@
-package main
+package processing
 
 import (
 	"fmt"
+	"github.com/pandulaDW/parallell-parse-xml-go/csv"
+	"github.com/pandulaDW/parallell-parse-xml-go/io"
+	"github.com/pandulaDW/parallell-parse-xml-go/models"
 	"log"
 	"time"
 )
 
-func concurrentProcessing(model GliefModel, inStage InputStage, outStage OutputStage) {
+// ConcurrentProcessing function acts as the main function to process a given file
+func ConcurrentProcessing(model models.GliefModel, inStage models.InputStage, outStage models.OutputStage) {
 	start := time.Now()
 	ch := make(chan *string)
 
-	bufferedReader, err := createBufferedReader(model, inStage)
+	bufferedReader, err := io.CreateBufferedReader(model, inStage)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	recordSets := readAndUnmarshalByStream(bufferedReader, ch, model)
-	bufferedWriter, err := createBufferedWriter(model, outStage)
+	bufferedWriter, err := io.CreateBufferedWriter(model, outStage)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	header := createCsvHeader(&model)
+	header := csv.CreateCsvHeader(&model)
 	_, _ = bufferedWriter.WriteString(header)
 	_ = bufferedWriter.WriteByte('\n')
 

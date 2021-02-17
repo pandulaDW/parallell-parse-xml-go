@@ -1,38 +1,39 @@
-package main
+package io
 
 import (
 	"bufio"
 	"bytes"
 	"compress/gzip"
+	"github.com/pandulaDW/parallell-parse-xml-go/models"
 	"io/ioutil"
 	"os"
 	"runtime"
 )
 
-// creates the buffered reader based on the input processing stage
-func createBufferedReader(model GliefModel, inStage InputStage) (*bufio.Reader, error) {
+// CreateBufferedReader creates a buffered reader based on the input processing stage
+func CreateBufferedReader(model models.GliefModel, inStage models.InputStage) (*bufio.Reader, error) {
 	switch inStage {
-	case XMLFileRead:
-		return createBufferedFileReader(model.xmlFileName)
-	case ZipFileRead:
-		return createBufferedZipFileReader(model.zipFileName)
-	case DownloadZipRead:
-		return createBufferedDownloadReader(model.url)
-	case XMLDownloadAndRead:
-		return createDownloadWriteAndReader(model.url, model.xmlFileName)
-	case XMLWriteAndRead:
-		return createReadWriteAndReader(model.zipFileName, model.xmlFileName)
+	case models.XMLFileRead:
+		return createBufferedFileReader(model.XmlFileName)
+	case models.ZipFileRead:
+		return createBufferedZipFileReader(model.ZipFileName)
+	case models.DownloadZipRead:
+		return createBufferedDownloadReader(model.Url)
+	case models.XMLDownloadAndRead:
+		return createDownloadWriteAndReader(model.Url, model.XmlFileName)
+	case models.XMLWriteAndRead:
+		return createReadWriteAndReader(model.ZipFileName, model.XmlFileName)
 	default:
 		return nil, nil
 	}
 }
 
-// creates the buffered writer based on the output processing stage
-func createBufferedWriter(model GliefModel, outStage OutputStage) (*bufio.Writer, error) {
+// CreateBufferedWriter creates a buffered writer based on the output processing stage
+func CreateBufferedWriter(model models.GliefModel, outStage models.OutputStage) (*bufio.Writer, error) {
 	switch outStage {
-	case CSVFileWrite:
-		return createFileWriter(model.csvFileName)
-	case ZipFileWrite:
+	case models.CSVFileWrite:
+		return createFileWriter(model.CsvFileName)
+	case models.ZipFileWrite:
 		return createGzipWriter(model)
 	default:
 		return nil, nil
@@ -119,13 +120,13 @@ func createFileWriter(filename string) (*bufio.Writer, error) {
 	return bufio.NewWriter(file), err
 }
 
-func createGzipWriter(model GliefModel) (*bufio.Writer, error) {
+func createGzipWriter(model models.GliefModel) (*bufio.Writer, error) {
 	zipFile, err := os.OpenFile(model.GZipFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		return nil, err
 	}
 	zipWriter := gzip.NewWriter(zipFile)
-	zipWriter.Name = model.csvFileName
+	zipWriter.Name = model.CsvFileName
 	bufferedWriter := bufio.NewWriter(zipWriter)
 	return bufferedWriter, nil
 }

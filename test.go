@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/xml"
+	"github.com/pandulaDW/parallell-parse-xml-go/csv"
 	"io/ioutil"
 	"log"
 	"strings"
@@ -20,12 +21,12 @@ func test() {
 	}
 
 	model := GliefModel{prefix: "lei"}
-	header := createCsvHeader(&model)
+	header := csv.createCsvHeader(&model)
 	sb := strings.Builder{}
 	sb.WriteString(header + "\n")
 
 	for _, record := range records.LEIRecords {
-		sb.WriteString(convertToCSVRowLEI(&record) + "\n")
+		sb.WriteString(csv.convertToCSVRowLEI(&record) + "\n")
 	}
 
 	_ = ioutil.WriteFile("data/leiCSV.csv", []byte(sb.String()), 0666)
