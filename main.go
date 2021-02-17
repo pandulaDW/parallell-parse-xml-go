@@ -14,16 +14,17 @@ func main() {
 }
 
 func processingInServer() {
-	rrModel := models.CreateRelationshipModel()
+	//rrModel := models.CreateRelationshipModel()
 	leiModel := models.CreateLEIModel()
-	repexModel := models.CreateReportingExceptionModel()
+	leiModel.ZipFileName = "data/20201202-gleif-concatenated-file-lei2.xml.5fc7579cab4ee.zip"
+	//repexModel := models.CreateReportingExceptionModel()
 
-	processing.ConcurrentProcessing(*rrModel, models.XMLDownloadAndRead, models.CSVFileWrite)
-	fmt.Println("Finished processing relationship file")
+	//processing.ConcurrentProcessing(*rrModel, models.XMLDownloadAndRead, models.CSVFileWrite)
+	//fmt.Println("Finished processing relationship file")
 
-	processing.ConcurrentProcessing(*leiModel, models.XMLDownloadAndRead, models.CSVFileWrite)
+	processing.ConcurrentProcessing(*leiModel, models.ZipFileRead, models.CSVFileWrite)
 	fmt.Println("Finished processing lei file")
 
-	processing.ConcurrentProcessing(*repexModel, models.XMLDownloadAndRead, models.CSVFileWrite)
-	fmt.Println("Finished processing repex file")
+	//processing.ConcurrentProcessing(*repexModel, models.XMLDownloadAndRead, models.CSVFileWrite)
+	//fmt.Println("Finished processing repex file")
 }

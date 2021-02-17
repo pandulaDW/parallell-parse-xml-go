@@ -41,5 +41,5 @@ func ConcurrentProcessing(model models.GliefModel, inStage models.InputStage, ou
 	}
 
 	_ = bufferedWriter.Flush()
-	fmt.Printf("%d concurrent parses with time taken: %v", recordSets, time.Since(start))
+	fmt.Printf("%d concurrent parses with time taken: %v\n", recordSets, time.Since(start))
 }

@@ -93,13 +93,18 @@ func ConvertToCSVRowRR(r *models.RelationshipRecord) string {
 // ConvertToCSVRowLEI creates a row based on a lei record
 func ConvertToCSVRowLEI(lei *models.LEIRecord) string {
 	rowContent := make([]string, 10)
-	rowContent[0] = fmt.Sprintf(`"%v","%v","%v"`,
+	rowContent[0] = fmt.Sprintf(`"%v","%v"`,
 		lei.LEI,
 		lei.Entity.LegalName,
-		lei.Entity.OtherEntityName[0],
 	)
 
-	rowContent[1] = fmt.Sprintf(`"%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v"`,
+	if len(lei.Entity.OtherEntityName) > 0 {
+		rowContent[1] = fmt.Sprintf(`"%v","%v"`, lei.Entity.OtherEntityName[0])
+	} else {
+		rowContent[1] = fmt.Sprintf(`""`)
+	}
+
+	rowContent[2] = fmt.Sprintf(`"%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v"`,
 		lei.Entity.LegalAddress.FirstAddressLine,
 		lei.Entity.LegalAddress.AdditionalAddressLine,
 		lei.Entity.LegalAddress.City,
@@ -114,16 +119,20 @@ func ConvertToCSVRowLEI(lei *models.LEIRecord) string {
 		lei.Entity.HeadquartersAddress.PostalCode,
 	)
 
-	rowContent[2] = fmt.Sprintf(`"%v","%v","%v","%v","%v","%v"`,
-		lei.Entity.OtherAddresses[0].FirstAddressLine,
-		lei.Entity.OtherAddresses[0].AdditionalAddressLine,
-		lei.Entity.OtherAddresses[0].City,
-		lei.Entity.OtherAddresses[0].Region,
-		lei.Entity.OtherAddresses[0].Country,
-		lei.Entity.OtherAddresses[0].PostalCode,
-	)
+	if len(lei.Entity.OtherAddresses) > 0 {
+		rowContent[3] = fmt.Sprintf(`"%v","%v","%v","%v","%v","%v"`,
+			lei.Entity.OtherAddresses[0].FirstAddressLine,
+			lei.Entity.OtherAddresses[0].AdditionalAddressLine,
+			lei.Entity.OtherAddresses[0].City,
+			lei.Entity.OtherAddresses[0].Region,
+			lei.Entity.OtherAddresses[0].Country,
+			lei.Entity.OtherAddresses[0].PostalCode,
+		)
+	} else {
+		rowContent[3] = fmt.Sprintf(`"","","","","",""`)
+	}
 
-	rowContent[3] = fmt.Sprintf(`"%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v"`,
+	rowContent[4] = fmt.Sprintf(`"%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v"`,
 		lei.Entity.RegistrationAuthority.RegistrationAuthorityID,
 		lei.Entity.RegistrationAuthority.RegistrationAuthorityEntityID,
 		lei.Entity.LegalJurisdiction,
