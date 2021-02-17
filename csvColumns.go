@@ -34,6 +34,46 @@ type CsvColNamesRR struct {
 	ValidationReference          string
 }
 
+// CsvColNamesLEI contains column names of the written csv file LEI data file
+type CsvColNamesLEI struct {
+	LEI                                      string
+	LegalName                                string
+	OtherEntityName1                         string
+	OtherEntityName2                         string
+	LegalAddressFirstAddressLine             string
+	LegalAddressAdditionalAddressLine        string
+	LegalAddressCity                         string
+	LegalAddressRegion                       string
+	LegalAddressCountry                      string
+	LegalAddressPostalCode                   string
+	HeadquartersAddressFirstAddressLine      string
+	HeadquartersAddressAdditionalAddressLine string
+	HeadquartersAddressCity                  string
+	HeadquartersAddressRegion                string
+	HeadquartersAddressCountry               string
+	HeadquartersAddressPostalCode            string
+	OtherAddresses1FirstAddressLine          string
+	OtherAddresses1AdditionalAddressLine     string
+	OtherAddresses1City                      string
+	OtherAddresses1Region                    string
+	OtherAddresses1Country                   string
+	OtherAddresses1PostalCode                string
+	RegistrationAuthorityID                  string
+	RegistrationAuthorityEntityID            string
+	LegalJurisdiction                        string
+	EntityLegalFormCode                      string
+	OtherLegalForm                           string
+	EntityStatus                             string
+	InitialRegistrationDate                  string
+	LastUpdateDate                           string
+	RegistrationStatus                       string
+	NextRenewalDate                          string
+	ManagingLOU                              string
+	ValidationSources                        string
+	ValidationAuthorityID                    string
+	ValidationAuthorityEntityID              string
+}
+
 // CsvColNamesRepex contains column names of the written csv file Repex file
 type CsvColNamesRepex struct {
 	LEI               string
