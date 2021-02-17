@@ -39,7 +39,6 @@ type CsvColNamesLEI struct {
 	LEI                                      string
 	LegalName                                string
 	OtherEntityName1                         string
-	OtherEntityName2                         string
 	LegalAddressFirstAddressLine             string
 	LegalAddressAdditionalAddressLine        string
 	LegalAddressCity                         string

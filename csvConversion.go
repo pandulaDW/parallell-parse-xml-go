@@ -11,6 +11,8 @@ func createCsvHeader(model *GliefModel) string {
 	switch {
 	case model.prefix == "rr":
 		colNames = CsvColNamesRR{}
+	case model.prefix == "lei":
+		colNames = CsvColNamesLEI{}
 	case model.prefix == "repex":
 		colNames = CsvColNamesRepex{}
 	}
@@ -80,6 +82,58 @@ func convertToCSVRowRR(r *RelationshipRecord) string {
 		r.Registration.ValidationSources,
 		r.Registration.ValidationDocuments,
 		replaceDoubleQuotes(r.Registration.ValidationReference),
+	)
+
+	return strings.Join(rowContent, ",")
+}
+
+func convertToCSVRowLEI(lei *LEIRecord) string {
+	rowContent := make([]string, 10)
+	rowContent[0] = fmt.Sprintf(`"%v","%v","%v"`,
+		lei.LEI,
+		lei.Entity.LegalName,
+		lei.Entity.OtherEntityName[0],
+	)
+
+	rowContent[1] = fmt.Sprintf(`"%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v"`,
+		lei.Entity.LegalAddress.FirstAddressLine,
+		lei.Entity.LegalAddress.AdditionalAddressLine,
+		lei.Entity.LegalAddress.City,
+		lei.Entity.LegalAddress.Region,
+		lei.Entity.LegalAddress.Country,
+		lei.Entity.LegalAddress.PostalCode,
+		lei.Entity.HeadquartersAddress.FirstAddressLine,
+		lei.Entity.HeadquartersAddress.AdditionalAddressLine,
+		lei.Entity.HeadquartersAddress.City,
+		lei.Entity.HeadquartersAddress.Region,
+		lei.Entity.HeadquartersAddress.Country,
+		lei.Entity.HeadquartersAddress.PostalCode,
+	)
+
+	rowContent[2] = fmt.Sprintf(`"%v","%v","%v","%v","%v","%v"`,
+		lei.Entity.OtherAddresses[0].FirstAddressLine,
+		lei.Entity.OtherAddresses[0].AdditionalAddressLine,
+		lei.Entity.OtherAddresses[0].City,
+		lei.Entity.OtherAddresses[0].Region,
+		lei.Entity.OtherAddresses[0].Country,
+		lei.Entity.OtherAddresses[0].PostalCode,
+	)
+
+	rowContent[3] = fmt.Sprintf(`"%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v"`,
+		lei.Entity.RegistrationAuthority.RegistrationAuthorityID,
+		lei.Entity.RegistrationAuthority.RegistrationAuthorityEntityID,
+		lei.Entity.LegalJurisdiction,
+		lei.Entity.LegalForm.EntityLegalFormCode,
+		lei.Entity.LegalForm.OtherLegalForm,
+		lei.Entity.EntityStatus,
+		lei.Registration.InitialRegistrationDate,
+		lei.Registration.LastUpdateDate,
+		lei.Registration.RegistrationStatus,
+		lei.Registration.NextRenewalDate,
+		lei.Registration.ManagingLOU,
+		lei.Registration.ValidationSources,
+		lei.Registration.ValidationAuthority.ValidationAuthorityID,
+		lei.Registration.ValidationAuthority.ValidationAuthorityEntityID,
 	)
 
 	return strings.Join(rowContent, ",")

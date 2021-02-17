@@ -28,7 +28,7 @@ func unmarshalLEI(content *string) *string {
 	}
 	sb := strings.Builder{}
 	for _, record := range records.LEIRecords {
-		row := fmt.Sprintf("%v -> %v", record.LEI, record.Entity.LegalName)
+		row := convertToCSVRowLEI(&record)
 		sb.WriteString(row)
 		sb.WriteByte('\n')
 	}
