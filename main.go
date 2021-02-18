@@ -17,20 +17,20 @@ func main() {
 
 func processingInServer(filenames map[string]string) {
 	rrModel := models.CreateRelationshipModel()
-	rrModel.ZipFileName = filenames["rr"]
+	rrModel.ZipFileName = "./zip_files/" + filenames["rr"]
 
 	leiModel := models.CreateLEIModel()
-	leiModel.ZipFileName = filenames["lei"]
+	leiModel.ZipFileName = "./zip_files/" + filenames["lei"]
 
 	repexModel := models.CreateReportingExceptionModel()
-	repexModel.ZipFileName = filenames["repex"]
+	repexModel.ZipFileName = "./zip_files/" + filenames["repex"]
 
-	processing.ConcurrentProcessing(*rrModel, models.XMLDownloadAndRead, models.CSVFileWrite)
+	processing.ConcurrentProcessing(*rrModel, models.ZipFileRead, models.CSVFileWrite)
 	fmt.Println("Finished processing relationship file")
 
 	processing.ConcurrentProcessing(*leiModel, models.ZipFileRead, models.CSVFileWrite)
 	fmt.Println("Finished processing lei file")
 
-	processing.ConcurrentProcessing(*repexModel, models.XMLDownloadAndRead, models.CSVFileWrite)
+	processing.ConcurrentProcessing(*repexModel, models.ZipFileRead, models.CSVFileWrite)
 	fmt.Println("Finished processing repex file")
 }

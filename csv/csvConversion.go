@@ -99,7 +99,7 @@ func ConvertToCSVRowLEI(lei *models.LEIRecord) string {
 	)
 
 	if len(lei.Entity.OtherEntityName) > 0 {
-		rowContent[1] = fmt.Sprintf(`"%v","%v"`, lei.Entity.OtherEntityName[0])
+		rowContent[1] = fmt.Sprintf(`"%v"`, lei.Entity.OtherEntityName[0])
 	} else {
 		rowContent[1] = fmt.Sprintf(`""`)
 	}
