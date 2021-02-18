@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/pandulaDW/parallell-parse-xml-go/io"
 	"github.com/pandulaDW/parallell-parse-xml-go/models"
 	"github.com/pandulaDW/parallell-parse-xml-go/processing"
 	"strings"
@@ -9,22 +10,27 @@ import (
 
 func main() {
 	fmt.Println("Processing started...")
-	processingInServer()
+	filenames := io.GetZipFileNames("zip_files")
+	processingInServer(filenames)
 	fmt.Println(strings.Repeat("-", 50))
 }
 
-func processingInServer() {
-	//rrModel := models.CreateRelationshipModel()
-	leiModel := models.CreateLEIModel()
-	leiModel.ZipFileName = "data/20201202-gleif-concatenated-file-lei2.xml.5fc7579cab4ee.zip"
-	//repexModel := models.CreateReportingExceptionModel()
+func processingInServer(filenames map[string]string) {
+	rrModel := models.CreateRelationshipModel()
+	rrModel.ZipFileName = filenames["rr"]
 
-	//processing.ConcurrentProcessing(*rrModel, models.XMLDownloadAndRead, models.CSVFileWrite)
-	//fmt.Println("Finished processing relationship file")
+	leiModel := models.CreateLEIModel()
+	leiModel.ZipFileName = filenames["lei"]
+
+	repexModel := models.CreateReportingExceptionModel()
+	repexModel.ZipFileName = filenames["repex"]
+
+	processing.ConcurrentProcessing(*rrModel, models.XMLDownloadAndRead, models.CSVFileWrite)
+	fmt.Println("Finished processing relationship file")
 
 	processing.ConcurrentProcessing(*leiModel, models.ZipFileRead, models.CSVFileWrite)
 	fmt.Println("Finished processing lei file")
 
-	//processing.ConcurrentProcessing(*repexModel, models.XMLDownloadAndRead, models.CSVFileWrite)
-	//fmt.Println("Finished processing repex file")
+	processing.ConcurrentProcessing(*repexModel, models.XMLDownloadAndRead, models.CSVFileWrite)
+	fmt.Println("Finished processing repex file")
 }
