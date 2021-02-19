@@ -92,7 +92,7 @@ func ConvertToCSVRowRR(r *models.RelationshipRecord) string {
 
 // ConvertToCSVRowLEI creates a row based on a lei record
 func ConvertToCSVRowLEI(lei *models.LEIRecord) string {
-	rowContent := make([]string, 10)
+	rowContent := make([]string, 5)
 	rowContent[0] = fmt.Sprintf(`"%v","%v"`,
 		lei.LEI,
 		lei.Entity.LegalName,
@@ -105,28 +105,28 @@ func ConvertToCSVRowLEI(lei *models.LEIRecord) string {
 	}
 
 	rowContent[2] = fmt.Sprintf(`"%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v","%v"`,
-		lei.Entity.LegalAddress.FirstAddressLine,
-		lei.Entity.LegalAddress.AdditionalAddressLine,
+		replaceDoubleQuotes(lei.Entity.LegalAddress.FirstAddressLine),
+		replaceDoubleQuotes(lei.Entity.LegalAddress.AdditionalAddressLine),
 		lei.Entity.LegalAddress.City,
 		lei.Entity.LegalAddress.Region,
 		lei.Entity.LegalAddress.Country,
-		lei.Entity.LegalAddress.PostalCode,
-		lei.Entity.HeadquartersAddress.FirstAddressLine,
-		lei.Entity.HeadquartersAddress.AdditionalAddressLine,
+		replaceDoubleQuotes(lei.Entity.LegalAddress.PostalCode),
+		replaceDoubleQuotes(lei.Entity.HeadquartersAddress.FirstAddressLine),
+		replaceDoubleQuotes(lei.Entity.HeadquartersAddress.AdditionalAddressLine),
 		lei.Entity.HeadquartersAddress.City,
 		lei.Entity.HeadquartersAddress.Region,
 		lei.Entity.HeadquartersAddress.Country,
-		lei.Entity.HeadquartersAddress.PostalCode,
+		replaceDoubleQuotes(lei.Entity.HeadquartersAddress.PostalCode),
 	)
 
 	if len(lei.Entity.OtherAddresses) > 0 {
 		rowContent[3] = fmt.Sprintf(`"%v","%v","%v","%v","%v","%v"`,
-			lei.Entity.OtherAddresses[0].FirstAddressLine,
-			lei.Entity.OtherAddresses[0].AdditionalAddressLine,
+			replaceDoubleQuotes(lei.Entity.OtherAddresses[0].FirstAddressLine),
+			replaceDoubleQuotes(lei.Entity.OtherAddresses[0].AdditionalAddressLine),
 			lei.Entity.OtherAddresses[0].City,
 			lei.Entity.OtherAddresses[0].Region,
 			lei.Entity.OtherAddresses[0].Country,
-			lei.Entity.OtherAddresses[0].PostalCode,
+			replaceDoubleQuotes(lei.Entity.OtherAddresses[0].PostalCode),
 		)
 	} else {
 		rowContent[3] = fmt.Sprintf(`"","","","","",""`)
