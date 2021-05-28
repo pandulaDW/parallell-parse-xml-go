@@ -16,13 +16,13 @@ func CreateBufferedReader(model models.GliefModel, inStage models.InputStage) (*
 	case models.XMLFileRead:
 		return createBufferedFileReader(model.XmlFileName)
 	case models.ZipFileRead:
-		return createBufferedZipFileReader(model.ZipFileName)
+		return createBufferedZipFileReader(model.ZipFileName, model.FileSize)
 	case models.DownloadZipRead:
-		return createBufferedDownloadReader(model.Url)
+		return createBufferedDownloadReader(model.Url, model.FileSize)
 	case models.XMLDownloadAndRead:
-		return createDownloadWriteAndReader(model.Url, model.XmlFileName)
+		return createDownloadWriteAndReader(model.Url, model.XmlFileName, model.FileSize)
 	case models.XMLWriteAndRead:
-		return createReadWriteAndReader(model.ZipFileName, model.XmlFileName)
+		return createReadWriteAndReader(model.ZipFileName, model.XmlFileName, model.FileSize)
 	default:
 		return nil, nil
 	}
@@ -41,48 +41,35 @@ func CreateBufferedWriter(model models.GliefModel, outStage models.OutputStage) 
 }
 
 // Readers -----------------------------------------------------
-func createFileReader(filename string) ([]byte, error) {
-	content, err := ioutil.ReadFile(filename)
-	return content, err
-}
-
 func createBufferedFileReader(filename string) (*bufio.Reader, error) {
 	file, err := os.Open(filename)
 	return bufio.NewReader(file), err
 }
 
-func createZipFileReader(zipFile string) ([]byte, error) {
+func createBufferedZipFileReader(zipFile string, fileSize int) (*bufio.Reader, error) {
 	zippedContent, err := ioutil.ReadFile(zipFile)
 	if err != nil {
 		return nil, err
 	}
-	return unzipFilesInMemory(zippedContent)
-}
-
-func createBufferedZipFileReader(zipFile string) (*bufio.Reader, error) {
-	zippedContent, err := ioutil.ReadFile(zipFile)
-	if err != nil {
-		return nil, err
-	}
-	content, err := unzipFilesInMemory(zippedContent)
+	content, err := unzipFilesInMemory(zippedContent, fileSize)
 	return bufio.NewReader(bytes.NewReader(content)), err
 }
 
-func createBufferedDownloadReader(url string) (*bufio.Reader, error) {
+func createBufferedDownloadReader(url string, fileSize int) (*bufio.Reader, error) {
 	zippedContent, err := downloadFileToMemory(url)
 	if err != nil {
 		return nil, err
 	}
-	content, err := unzipFilesInMemory(zippedContent)
+	content, err := unzipFilesInMemory(zippedContent, fileSize)
 	return bufio.NewReader(bytes.NewReader(content)), err
 }
 
-func createDownloadWriteAndReader(url, filename string) (*bufio.Reader, error) {
+func createDownloadWriteAndReader(url, filename string, fileSize int) (*bufio.Reader, error) {
 	zippedContent, err := downloadFileToMemory(url)
 	if err != nil {
 		return nil, err
 	}
-	content, err := unzipFilesInMemory(zippedContent)
+	content, err := unzipFilesInMemory(zippedContent, fileSize)
 	if err != nil {
 		return nil, err
 	}
@@ -93,12 +80,12 @@ func createDownloadWriteAndReader(url, filename string) (*bufio.Reader, error) {
 	return createBufferedFileReader(filename)
 }
 
-func createReadWriteAndReader(zipFile, filename string) (*bufio.Reader, error) {
+func createReadWriteAndReader(zipFile, filename string, fileSize int) (*bufio.Reader, error) {
 	zippedContent, err := ioutil.ReadFile(zipFile)
 	if err != nil {
 		return nil, err
 	}
-	content, err := unzipFilesInMemory(zippedContent)
+	content, err := unzipFilesInMemory(zippedContent, fileSize)
 	if err != nil {
 		return nil, err
 	}

@@ -26,7 +26,7 @@ func downloadFileToMemory(url string) ([]byte, error) {
 	return ioutil.ReadAll(buffer)
 }
 
-func unzipFilesInMemory(zipContent []byte) ([]byte, error) {
+func unzipFilesInMemory(zipContent []byte, fileSize int) ([]byte, error) {
 	zipReader, err := zip.NewReader(bytes.NewReader(zipContent), int64(len(zipContent)))
 	if err != nil {
 		return nil, err
@@ -40,8 +40,8 @@ func unzipFilesInMemory(zipContent []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	buf := bytes.Buffer{}
-	_, err = io.Copy(&buf, f)
+	buf := bytes.NewBuffer(make([]byte, 0, fileSize))
+	_, err = io.Copy(buf, f)
 	if err != nil {
 		return nil, err
 	}
