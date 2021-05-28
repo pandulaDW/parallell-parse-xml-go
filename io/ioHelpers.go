@@ -32,32 +32,26 @@ func unzipFilesInMemory(zipContent []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	// read all the files from zip archive
-	allContent := make([]byte, 0)
-	for _, zipFile := range zipReader.File {
-		fmt.Println("Reading file: ", zipFile.Name)
-		unzippedFileBytes, err := readZipFile(zipFile)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		allContent = append(allContent, unzippedFileBytes...)
+	zipFile := zipReader.File[0]
+	fmt.Println("Reading file: ", zipFile.Name)
+
+	f, err := zipFile.Open()
+	if err != nil {
+		return nil, err
 	}
-	return allContent, nil
+
+	buf := bytes.Buffer{}
+	_, err = io.Copy(&buf, f)
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
 }
 
 func unzipFilesToDisk(unzippedContent []byte, filename string) error {
 	err := ioutil.WriteFile(filename, unzippedContent, 0666)
 	return err
-}
-
-func readZipFile(zf *zip.File) ([]byte, error) {
-	f, err := zf.Open()
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	return ioutil.ReadAll(f)
 }
 
 //GetZipFileNames will return the files names dictionary
