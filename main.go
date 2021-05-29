@@ -10,17 +10,17 @@ import (
 
 func main() {
 	fmt.Println("Processing started...")
-	filenames := io.GetZipFileNames("zip_files")
+	filenames := io.GetZipFileNames("data")
 	processingInServer(filenames)
 	fmt.Println(strings.Repeat("-", 50))
 }
 
 func processingInServer(filenames map[string]string) {
 	rrModel := models.CreateRelationshipModel()
-	rrModel.ZipFileName = "./zip_files/" + filenames["rr"]
+	rrModel.ZipFileName = "./data/" + filenames["rr"]
 
 	leiModel := models.CreateLEIModel()
-	leiModel.ZipFileName = "./zip_files/" + filenames["lei"]
+	leiModel.ZipFileName = "./data/" + filenames["lei"]
 
 	repexModel := models.CreateReportingExceptionModel()
 	repexModel.ZipFileName = "./zip_files/" + filenames["repex"]
@@ -28,9 +28,9 @@ func processingInServer(filenames map[string]string) {
 	processing.ConcurrentProcessing(*rrModel, models.ZipFileRead, models.CSVFileWrite)
 	fmt.Println("Finished processing relationship file")
 
-	processing.ConcurrentProcessing(*leiModel, models.ZipFileRead, models.CSVFileWrite)
-	fmt.Println("Finished processing lei file")
+	//processing.ConcurrentProcessing(*leiModel, models.ZipFileRead, models.CSVFileWrite)
+	//fmt.Println("Finished processing lei file")
 
-	processing.ConcurrentProcessing(*repexModel, models.ZipFileRead, models.CSVFileWrite)
-	fmt.Println("Finished processing repex file")
+	//processing.ConcurrentProcessing(*repexModel, models.ZipFileRead, models.CSVFileWrite)
+	//fmt.Println("Finished processing repex file")
 }

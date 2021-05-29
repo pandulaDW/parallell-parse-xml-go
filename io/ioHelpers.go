@@ -26,21 +26,22 @@ func downloadFileToMemory(url string) ([]byte, error) {
 	return ioutil.ReadAll(buffer)
 }
 
-func unzipFilesInMemory(zipContent []byte, fileSize int) ([]byte, error) {
+func unzipFilesInMemory(zipContent []byte) ([]byte, error) {
 	zipReader, err := zip.NewReader(bytes.NewReader(zipContent), int64(len(zipContent)))
 	if err != nil {
 		return nil, err
 	}
 
 	zipFile := zipReader.File[0]
-	fmt.Println("Reading file: ", zipFile.Name)
+	fmt.Printf("Reading file: %s with file size %d\n", zipFile.Name)
 
 	f, err := zipFile.Open()
 	if err != nil {
 		return nil, err
 	}
 
-	buf := bytes.NewBuffer(make([]byte, 0, fileSize))
+	bufferSize := zipFile.FileInfo().Size()
+	buf := bytes.NewBuffer(make([]byte, 0, bufferSize))
 	_, err = io.Copy(buf, f)
 	if err != nil {
 		return nil, err

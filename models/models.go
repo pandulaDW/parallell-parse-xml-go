@@ -17,7 +17,6 @@ type GliefModel struct {
 	GZipFileName      string
 	CsvFileName       string
 	Url               string
-	FileSize          int
 }
 
 // InputStage represents the input method of the processing pipeline
@@ -58,7 +57,6 @@ func CreateRelationshipModel() *GliefModel {
 	rrModel.RecordsPerRoutine = 1000
 	rrModel.CsvFileName = "data/rrFile.csv"
 	rrModel.Url = createUrl("rr")
-	rrModel.FileSize = 2 * 1024 * 1024 * 1024
 	return &rrModel
 }
 
@@ -69,7 +67,6 @@ func CreateLEIModel() *GliefModel {
 	leiModel.CsvFileName = "data/leiFile.csv"
 	leiModel.XmlFileName = "leiXML.xml"
 	leiModel.Url = createUrl("lei2") // url is defined as this
-	leiModel.FileSize = 4.5 * 1024 * 1024 * 1024
 	return &leiModel
 }
 
@@ -79,6 +76,5 @@ func CreateReportingExceptionModel() *GliefModel {
 	repexModel.RecordsPerRoutine = 1000
 	repexModel.CsvFileName = "data/repexFile.csv"
 	repexModel.Url = createUrl("repex")
-	repexModel.FileSize = 2 * 1024 * 1024 * 1024
 	return &repexModel
 }
