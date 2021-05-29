@@ -1,35 +1,28 @@
 package processing
 
 import (
-	"compress/gzip"
 	"fmt"
 	"github.com/pandulaDW/parallell-parse-xml-go/csv"
 	"github.com/pandulaDW/parallell-parse-xml-go/io"
 	"github.com/pandulaDW/parallell-parse-xml-go/models"
-	"log"
-	"os"
-	"path/filepath"
 	"time"
 )
 
 // ConcurrentProcessing function acts as the main function to process a given file
-func ConcurrentProcessing(model models.GliefModel, inStage models.InputStage) {
+func ConcurrentProcessing(model models.GliefModel, inStage models.InputStage) error {
 	start := time.Now()
 	ch := make(chan *string)
 
 	bufferedReader, err := io.CreateBufferedReader(model, inStage)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-
-	zipFile, err := os.OpenFile(model.GZipFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-	zipWriter := gzip.NewWriter(zipFile)
-	zipWriter.Name = filepath.Base(model.CsvFileName)
 
 	recordSets := readAndUnmarshalByStream(bufferedReader, ch, model)
+	zipWriter, err := io.CreateZipFileWriter(model)
+	if err != nil {
+		return err
+	}
 
 	header := csv.CreateCsvHeader(&model)
 	_, _ = zipWriter.Write([]byte(header))
@@ -48,8 +41,9 @@ func ConcurrentProcessing(model models.GliefModel, inStage models.InputStage) {
 	_ = zipWriter.Flush()
 	err = zipWriter.Close()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	fmt.Printf("%d concurrent parses with time taken: %v\n", recordSets, time.Since(start))
+	return nil
 }

@@ -45,7 +45,7 @@ func createUrl(prefix string) string {
 func CreateRelationshipModel() *GliefModel {
 	rrModel := GliefModel{Prefix: "rr", Category: "Relationship"}
 	rrModel.RecordsPerRoutine = 1000
-	rrModel.CsvFileName = "data/rrFile.csv"
+	rrModel.CsvFileName = "csv/rrFile.csv"
 	rrModel.GZipFileName = "/tmp/rrFile.zip"
 	rrModel.Url = createUrl("rr")
 	return &rrModel
@@ -55,7 +55,7 @@ func CreateRelationshipModel() *GliefModel {
 func CreateLEIModel() *GliefModel {
 	leiModel := GliefModel{Prefix: "lei", Category: "LEI"}
 	leiModel.RecordsPerRoutine = 2000
-	leiModel.CsvFileName = "data/leiFile.csv"
+	leiModel.CsvFileName = "csv/leiFile.csv"
 	leiModel.GZipFileName = "/tmp/leiFile.zip"
 	leiModel.XmlFileName = "leiXML.xml"
 	leiModel.Url = createUrl("lei2") // url is defined as this
@@ -66,7 +66,7 @@ func CreateLEIModel() *GliefModel {
 func CreateReportingExceptionModel() *GliefModel {
 	repexModel := GliefModel{Prefix: "repex", Category: "Exception"}
 	repexModel.RecordsPerRoutine = 1000
-	repexModel.CsvFileName = "data/repexFile.csv"
+	repexModel.CsvFileName = "csv/repexFile.csv"
 	repexModel.GZipFileName = "/tmp/repexFile.zip"
 	repexModel.Url = createUrl("repex")
 	return &repexModel
