@@ -1,6 +1,8 @@
 package processing
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"github.com/pandulaDW/parallell-parse-xml-go/csv"
 	"github.com/pandulaDW/parallell-parse-xml-go/io"
@@ -10,7 +12,7 @@ import (
 )
 
 // ConcurrentProcessing function acts as the main function to process a given file
-func ConcurrentProcessing(model models.GliefModel, inStage models.InputStage, outStage models.OutputStage) {
+func ConcurrentProcessing(model models.GliefModel, inStage models.InputStage) []byte {
 	start := time.Now()
 	ch := make(chan *string)
 
@@ -20,10 +22,9 @@ func ConcurrentProcessing(model models.GliefModel, inStage models.InputStage, ou
 	}
 
 	recordSets := readAndUnmarshalByStream(bufferedReader, ch, model)
-	bufferedWriter, err := io.CreateBufferedWriter(model, outStage)
-	if err != nil {
-		log.Fatal(err)
-	}
+
+	buffer := bytes.NewBuffer(make([]byte, 0, 1*1024*1024*1024))
+	bufferedWriter := bufio.NewWriter(buffer)
 
 	header := csv.CreateCsvHeader(&model)
 	_, _ = bufferedWriter.WriteString(header)
@@ -39,7 +40,8 @@ func ConcurrentProcessing(model models.GliefModel, inStage models.InputStage, ou
 			_ = bufferedWriter.Flush()
 		}
 	}
-
 	_ = bufferedWriter.Flush()
 	fmt.Printf("%d concurrent parses with time taken: %v\n", recordSets, time.Since(start))
+
+	return buffer.Bytes()
 }

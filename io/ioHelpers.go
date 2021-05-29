@@ -53,6 +53,9 @@ func unzipFilesInMemory(zipContent []byte) ([]byte, error) {
 		return nil, err
 	}
 
+	// run the GC to clear zip file content
+	runtime.GC()
+
 	return buf.Bytes(), nil
 }
 
@@ -98,9 +101,9 @@ func bToMb(b uint64) uint64 {
 	return b / 1024 / 1024
 }
 
-func WriteFileToS3(sess *session.Session, fileName string) error {
+func WriteFileToS3(sess *session.Session, filePath string) error {
 	bucketName := "lambda-test-go-upload"
-	f, err := os.Open(fileName)
+	f, err := os.Open(filePath)
 	if err != nil {
 		return err
 	}
@@ -109,10 +112,9 @@ func WriteFileToS3(sess *session.Session, fileName string) error {
 	uploader := s3manager.NewUploader(sess)
 
 	// Upload the file to S3.
-	fmt.Println("Uploading file to S3...")
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucketName),
-		Key:    aws.String(filepath.Base(fileName)),
+		Key:    aws.String(filepath.Base(filePath)),
 		Body:   f,
 	})
 
