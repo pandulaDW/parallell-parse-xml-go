@@ -7,6 +7,7 @@ import (
 	"github.com/pandulaDW/parallell-parse-xml-go/models"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"runtime"
 )
 
@@ -35,6 +36,8 @@ func CreateBufferedWriter(model models.GliefModel, outStage models.OutputStage) 
 		return createFileWriter(model.CsvFileName)
 	case models.ZipFileWrite:
 		return createGzipWriter(model)
+	case models.MemoryWrite:
+		return createMemoryWriter()
 	default:
 		return nil, nil
 	}
@@ -113,7 +116,12 @@ func createGzipWriter(model models.GliefModel) (*bufio.Writer, error) {
 		return nil, err
 	}
 	zipWriter := gzip.NewWriter(zipFile)
-	zipWriter.Name = model.CsvFileName
+	zipWriter.Name = filepath.Base(model.CsvFileName)
 	bufferedWriter := bufio.NewWriter(zipWriter)
 	return bufferedWriter, nil
+}
+
+func createMemoryWriter() (*bufio.Writer, error) {
+	buf := bytes.NewBuffer(make([]byte, 0, 600*1024*1024))
+	return bufio.NewWriter(buf), nil
 }

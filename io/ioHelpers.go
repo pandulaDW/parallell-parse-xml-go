@@ -4,10 +4,16 @@ import (
 	"archive/zip"
 	"bytes"
 	"fmt"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
+	"runtime"
 	"strings"
 )
 
@@ -33,7 +39,7 @@ func unzipFilesInMemory(zipContent []byte) ([]byte, error) {
 	}
 
 	zipFile := zipReader.File[0]
-	fmt.Printf("Reading file: %s with file size %d\n", zipFile.Name)
+	fmt.Println("Reading file:", zipFile.Name)
 
 	f, err := zipFile.Open()
 	if err != nil {
@@ -76,4 +82,44 @@ func GetZipFileNames(path string) map[string]string {
 	}
 
 	return filenames
+}
+
+// PrintMemUsage prints allocation and GC information
+func PrintMemUsage() {
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	fmt.Printf("Alloc = %v MiB", bToMb(m.Alloc))
+	fmt.Printf("\tTotalAlloc = %v MiB", bToMb(m.TotalAlloc))
+	fmt.Printf("\tSys = %v MiB", bToMb(m.Sys))
+	fmt.Printf("\tNumGC = %v\n", m.NumGC)
+}
+
+func bToMb(b uint64) uint64 {
+	return b / 1024 / 1024
+}
+
+func WriteFileToS3(sess *session.Session, fileName string) error {
+	bucketName := "lambda-test-go-upload"
+	f, err := os.Open(fileName)
+	if err != nil {
+		return err
+	}
+
+	// Create an uploader with the session and default options
+	uploader := s3manager.NewUploader(sess)
+
+	// Upload the file to S3.
+	fmt.Println("Uploading file to S3...")
+	result, err := uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(filepath.Base(fileName)),
+		Body:   f,
+	})
+
+	if err != nil {
+		return fmt.Errorf("failed to upload file, %v", err)
+	}
+	fmt.Printf("File uploaded to, %s\n", result.Location)
+
+	return nil
 }
