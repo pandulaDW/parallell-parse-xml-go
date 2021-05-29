@@ -5,6 +5,7 @@ import (
 	"github.com/pandulaDW/parallell-parse-xml-go/csv"
 	"github.com/pandulaDW/parallell-parse-xml-go/io"
 	"github.com/pandulaDW/parallell-parse-xml-go/models"
+	"runtime"
 	"time"
 )
 
@@ -45,5 +46,31 @@ func ConcurrentProcessing(model models.GliefModel, inStage models.InputStage) er
 	}
 
 	fmt.Printf("%d concurrent parses with time taken: %v\n", recordSets, time.Since(start))
+	return nil
+}
+
+// ProcessFile will go through the full flow for a given type
+func ProcessFile(_type string) error {
+	var model *models.GliefModel
+	switch _type {
+	case "rr":
+		model = models.CreateRelationshipModel()
+	case "lei":
+		model = models.CreateLEIModel()
+	default:
+		model = models.CreateReportingExceptionModel()
+	}
+
+	err := ConcurrentProcessing(*model, models.S3XMLFileRead)
+	if err != nil {
+		return err
+	}
+	runtime.GC()
+
+	err = io.WriteFileToS3(*model)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

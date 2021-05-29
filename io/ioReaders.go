@@ -3,6 +3,8 @@ package io
 import (
 	"bufio"
 	"bytes"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/pandulaDW/parallell-parse-xml-go/models"
 	"io/ioutil"
 	"os"
@@ -22,6 +24,8 @@ func CreateBufferedReader(model models.GliefModel, inStage models.InputStage) (*
 		return createDownloadWriteAndReader(model.Url, model.XmlFileName)
 	case models.XMLWriteAndRead:
 		return createReadWriteAndReader(model.ZipFileName, model.XmlFileName)
+	case models.S3XMLFileRead:
+		return createS3fileReader(model)
 	default:
 		return nil, nil
 	}
@@ -83,4 +87,19 @@ func createReadWriteAndReader(zipFile, filename string) (*bufio.Reader, error) {
 	content = nil
 	runtime.GC()
 	return createBufferedFileReader(filename)
+}
+
+func createS3fileReader(model models.GliefModel) (*bufio.Reader, error) {
+	input := &s3.GetObjectInput{
+		Bucket: aws.String(model.Bucket),
+		Key:    aws.String(model.XmlFileName),
+	}
+
+	request, err := model.SVC.GetObject(input)
+	if err != nil {
+		return nil, err
+	}
+
+	reader := bufio.NewReader(request.Body)
+	return reader, nil
 }
