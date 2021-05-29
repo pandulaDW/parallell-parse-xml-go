@@ -3,11 +3,9 @@ package io
 import (
 	"bufio"
 	"bytes"
-	"compress/gzip"
 	"github.com/pandulaDW/parallell-parse-xml-go/models"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"runtime"
 )
 
@@ -24,20 +22,6 @@ func CreateBufferedReader(model models.GliefModel, inStage models.InputStage) (*
 		return createDownloadWriteAndReader(model.Url, model.XmlFileName)
 	case models.XMLWriteAndRead:
 		return createReadWriteAndReader(model.ZipFileName, model.XmlFileName)
-	default:
-		return nil, nil
-	}
-}
-
-// CreateBufferedWriter creates a buffered writer based on the output processing stage
-func CreateBufferedWriter(model models.GliefModel, outStage models.OutputStage) (*bufio.Writer, error) {
-	switch outStage {
-	case models.CSVFileWrite:
-		return createFileWriter(model.CsvFileName)
-	case models.ZipFileWrite:
-		return createGzipWriter(model)
-	case models.MemoryWrite:
-		return createMemoryWriter()
 	default:
 		return nil, nil
 	}
@@ -99,29 +83,4 @@ func createReadWriteAndReader(zipFile, filename string) (*bufio.Reader, error) {
 	content = nil
 	runtime.GC()
 	return createBufferedFileReader(filename)
-}
-
-// Writers ------------------------------------------------------
-func createFileWriter(filename string) (*bufio.Writer, error) {
-	file, err := os.OpenFile(filename, os.O_CREATE|os.O_RDWR|os.O_APPEND, 0666)
-	if err != nil {
-		return nil, err
-	}
-	return bufio.NewWriter(file), err
-}
-
-func createGzipWriter(model models.GliefModel) (*bufio.Writer, error) {
-	zipFile, err := os.OpenFile(model.GZipFileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		return nil, err
-	}
-	zipWriter := gzip.NewWriter(zipFile)
-	zipWriter.Name = filepath.Base(model.CsvFileName)
-	bufferedWriter := bufio.NewWriter(zipWriter)
-	return bufferedWriter, nil
-}
-
-func createMemoryWriter() (*bufio.Writer, error) {
-	buf := bytes.NewBuffer(make([]byte, 0, 600*1024*1024))
-	return bufio.NewWriter(buf), nil
 }

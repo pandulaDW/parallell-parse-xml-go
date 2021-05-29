@@ -35,18 +35,6 @@ const (
 	DownloadZipRead InputStage = "DownloadZipRead"
 )
 
-// OutputStage represents the output method of the processing pipeline
-type OutputStage string
-
-const (
-	// CSVFileWrite write the csv file to disk
-	CSVFileWrite OutputStage = "CSVFileWrite"
-	// ZipFileWrite writes the zip file to disk
-	ZipFileWrite OutputStage = "ZipFileWrite"
-	// MemoryWrite writes the csv content to memory
-	MemoryWrite OutputStage = "MemoryWrite"
-)
-
 func createUrl(prefix string) string {
 	day := time.Now().AddDate(0, 0, -1).Format("20060102")
 	url := fmt.Sprintf("https://leidata.gleif.org/api/v1/concatenated-files/%s/%s/zip", prefix, day)
