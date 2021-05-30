@@ -17,7 +17,6 @@ func unmarshalRR(content *string) *string {
 	for _, record := range records.RelationshipRecords {
 		row := csv.ConvertToCSVRowRR(&record)
 		sb.WriteString(row)
-		sb.WriteByte('\n')
 	}
 	str := sb.String()
 	return &str
